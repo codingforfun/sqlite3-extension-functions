@@ -1601,6 +1601,30 @@ static void upper_quartileFinalize(sqlite3_context *context){
 }
 
 /*
+** Returns the lower_decile value
+*/
+static void lower_decileFinalize(sqlite3_context *context){
+  ModeCtx *p;
+  p = (ModeCtx*) sqlite3_aggregate_context(context, 0);
+  if( p!=0 ){
+    p->pcnt = (p->cnt)/10.0;
+    _medianFinalize(context);
+  }
+}
+
+/*
+** Returns the upper_decile value
+*/
+static void upper_decileFinalize(sqlite3_context *context){
+  ModeCtx *p;
+  p = (ModeCtx*) sqlite3_aggregate_context(context, 0);
+  if( p!=0 ){
+    p->pcnt = (p->cnt)*9/10.0;
+    _medianFinalize(context);
+  }
+}
+
+/*
 ** Returns the stdev value
 */
 static void stdevFinalize(sqlite3_context *context){
@@ -1786,7 +1810,9 @@ int RegisterExtensionFunctions(sqlite3 *db){
     { "mode",                 1, 0, 0, modeStep,     modeFinalize  },
     { "median",               1, 0, 0, modeStep,     medianFinalize  },
     { "lower_quartile",       1, 0, 0, modeStep,     lower_quartileFinalize  },
-    { "upper_quartile",       1, 0, 0, modeStep,     upper_quartileFinalize  }
+    { "upper_quartile",       1, 0, 0, modeStep,     upper_quartileFinalize  },
+    { "lower_decile",         1, 0, 0, modeStep,     lower_decileFinalize  },
+    { "upper_decile",         1, 0, 0, modeStep,     upper_decileFinalize  },
   };
   int i;
 
